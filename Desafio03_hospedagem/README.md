@@ -1,21 +1,98 @@
-# DIO - Trilha .NET - Explorando a linguagem C#
-www.dio.me
+### ‎ >_ `namespace DesafioProjetoHospedagem;` | Desafio 03 - Hospedagem
 
-## Desafio de projeto
-Para este desafio, você precisará usar seus conhecimentos adquiridos no módulo de explorando a linguagem C#, da trilha .NET da DIO.
+```csharp
+Reserva reserva = new Reserva(diasReservados: 5);
+reserva.CadastrarSuite(suite);
+reserva.CadastrarHospedes(hospedes);
 
-## Contexto
-Você foi contratado para construir um sistema de hospedagem, que será usado para realizar uma reserva em um hotel. Você precisará usar a classe Pessoa, que representa o hóspede, a classe Suíte, e a classe Reserva, que fará um relacionamento entre ambos.
+Console.WriteLine($"Hóspedes: {reserva.ObterQuantidadeHospedes()}");
+Console.WriteLine($"Valor diária: {reserva.CalcularValorDiaria()}");
+```
 
-O seu programa deverá cálcular corretamente os valores dos métodos da classe Reserva, que precisará trazer a quantidade de hóspedes e o valor da diária, concedendo um desconto de 10% para caso a reserva seja para um período maior que 10 dias.
+> **Legenda:** ☑ `pronto` (entregue e revisado)  •  ☐ `wip` (em andamento)
 
-## Regras e validações
-1. Não deve ser possível realizar uma reserva de uma suíte com capacidade menor do que a quantidade de hóspedes. Exemplo: Se é uma suíte capaz de hospedar 2 pessoas, então ao passar 3 hóspedes deverá retornar uma exception.
-2. O método ObterQuantidadeHospedes da classe Reserva deverá retornar a quantidade total de hóspedes, enquanto que o método CalcularValorDiaria deverá retornar o valor da diária (Dias reservados x valor da diária).
-3. Caso seja feita uma reserva igual ou maior que 10 dias, deverá ser concedido um desconto de 10% no valor da diária.
+---
 
+### ✉︎ Sobre o Desafio
 
-![Diagrama de classe estacionamento](diagrama_classe_hotel.png)
+`Console.WriteLine("sobre");`
 
-## Solução
-O código está pela metade, e você deverá dar continuidade obedecendo as regras descritas acima, para que no final, tenhamos um programa funcional. Procure pela palavra comentada "TODO" no código, em seguida, implemente conforme as regras acima.
+- [x] `const string modulo` Desafio de projeto do módulo **Explorando a linguagem C#**, da trilha .NET (DIO)
+- [x] `string linguagem = "C# / .NET 10";` Aplicação de **console** com três classes que se relacionam
+- [x] `class Reserva` Faz a ligação entre os hóspedes (`Pessoa`) e a `Suite`, e calcula o valor
+- [x] `// REVISÃO` Bugs corrigidos depois da entrega original (tabela mais abaixo)
+
+---
+
+### ✉︎ Enunciado
+
+`/* resumo do desafio */`
+
+Sistema de hospedagem de um hotel, com as classes `Pessoa` (o hóspede), `Suite` e `Reserva`:
+
+![Diagrama de classes do hotel](diagrama_classe_hotel.png)
+
+**Regras e validações**
+
+| #  | Regra                                                                                                                      | Status |
+|:--:|:---------------------------------------------------------------------------------------------------------------------------|:------:|
+| 01 | Não é possível reservar uma suíte para mais hóspedes do que a capacidade dela: deve lançar uma exceção                     |   ☑    |
+| 02 | `ObterQuantidadeHospedes()` retorna o total de hóspedes e `CalcularValorDiaria()` retorna `dias reservados x valor da diária` |   ☑    |
+| 03 | Reservas de **10 dias ou mais** têm **10% de desconto**                                                                    |   ☑    |
+
+`// o texto da DIO fala em "maior que 10 dias" em um ponto e "igual ou maior que 10" em outro; a regra implementada é >= 10`
+
+`// enunciado original: DIO (resumido aqui)`
+
+---
+
+### ✉︎ Código
+
+`map<arquivo, papel> codigo = { ... };`
+
+| Arquivo                                                                         | Papel                                                                                              | Status |
+|:--------------------------------------------------------------------------------|:---------------------------------------------------------------------------------------------------|:------:|
+| [`Program.cs`](./Program.cs)                                                    | Monta hóspedes, suíte e reserva e exibe a quantidade de hóspedes e o valor da diária               |   ☑    |
+| [`Models/Pessoa.cs`](./Models/Pessoa.cs)                                        | Hóspede, com `Nome`, `Sobrenome` e `NomeCompleto`                                                  |   ☑    |
+| [`Models/Suite.cs`](./Models/Suite.cs)                                          | Suíte, com `TipoSuite`, `Capacidade` e `ValorDiaria`                                               |   ☑    |
+| [`Models/Reserva.cs`](./Models/Reserva.cs)                                      | `CadastrarSuite()`, `CadastrarHospedes()`, `ObterQuantidadeHospedes()` e `CalcularValorDiaria()`   |   ☑    |
+| [`DesafioProjetoHospedagem.csproj`](./DesafioProjetoHospedagem.csproj)          | Projeto de console (`net10.0`)                                                                     |   ☑    |
+
+---
+
+### ✉︎ Revisão
+
+`git log --oneline --grep="desafio03"`
+
+Cada trecho alterado tem um comentário `// CORREÇÃO` ou `// MELHORIA` no código, explicando o que mudou.
+
+| Tipo   | Onde                                  | O que era                                                                          | Como ficou                                                                        |
+|:-------|:--------------------------------------|:-----------------------------------------------------------------------------------|:----------------------------------------------------------------------------------|
+| `fix`  | `Reserva.CadastrarHospedes()`         | Sem suíte cadastrada, estourava `NullReferenceException` (erro difícil de entender) | Lança `InvalidOperationException` pedindo para cadastrar a suíte primeiro         |
+| `fix`  | `Reserva.CalcularValorDiaria()`       | Mesmo problema com a suíte nula                                                    | Mesma validação, com mensagem clara                                               |
+| `fix`  | `Reserva.Hospedes`                    | A lista começava `null`, e `ObterQuantidadeHospedes()` quebrava antes do cadastro  | Lista inicializada vazia: o método retorna `0`                                    |
+| `feat` | `Reserva.CadastrarHospedes()`         | Lançava `Exception` genérica e aceitava lista nula ou vazia                        | `ArgumentException` com os números na mensagem; valida lista nula ou vazia        |
+| `fix`  | `Pessoa.NomeCompleto`                 | Sem sobrenome, o texto ficava com espaço sobrando (`"HÓSPEDE 1 "`)                 | `Trim()` remove o espaço                                                          |
+
+---
+
+### ✉︎ Exemplo de Execução
+
+`./Program.cs`
+
+```
+Hóspedes: 2
+Valor diária: 150
+```
+
+`// suíte Premium de 30 por dia, 5 dias: 5 x 30 = 150 (sem desconto, pois são menos de 10 dias)`
+
+---
+
+### ✉︎ Como Executar
+
+`system("dotnet run");`
+
+```bash
+dotnet run
+```

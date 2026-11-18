@@ -17,5 +17,7 @@ public class Pessoa
 
     public string Nome { get; set; }
     public string Sobrenome { get; set; }
-    public string NomeCompleto => $"{Nome} {Sobrenome}".ToUpper();
+    // CORREÇÃO: quando a pessoa tem só o nome (Sobrenome == null), o texto ficava com um espaço
+    // sobrando no fim ("HÓSPEDE 1 "). O Trim() remove espaços das pontas.
+    public string NomeCompleto => $"{Nome} {Sobrenome}".Trim().ToUpper();
 }
