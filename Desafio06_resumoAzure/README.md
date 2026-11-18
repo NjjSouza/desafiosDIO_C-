@@ -1,3 +1,41 @@
+### ‎ >_ `az account show` | Desafio 06 - Resumo de Cloud com Azure
+
+```bash
+az login
+az group create --name rg-estudos --location brazilsouth
+```
+
+> **Legenda:** ☑ `pronto` (anotações concluídas)  •  ☐ `wip` (em andamento)
+
+---
+
+### ✉︎ Sobre o Desafio
+
+`echo "sobre"`
+
+- [x] `lab` **Localizando Serviços por Categoria**, do curso de **Introdução a Cloud com Azure** da DIO
+- [x] `formato` Não tem código: é um **resumo das lições** e anotações que fiz durante as aulas
+- [x] `foco` Exemplos práticos pensando na minha principal área de desenvolvimento: o **Back-End**
+
+---
+
+### ✉︎ Índice
+
+`ls anotacoes/`
+
+| #   | Seção                                      | Status |
+|:---:|:-------------------------------------------|:------:|
+| I   | Conceitos Iniciais                         |   ☑    |
+| II  | Entendendo os Modelos de Implantação       |   ☑    |
+| III | Benefícios da Computação em Nuvem          |   ☑    |
+| IV  | Tipos de Serviço (Azure)                   |   ☑    |
+| V   | O Modelo de Responsabilidade Compartilhada |   ☑    |
+| VI  | Conclusão e Próximos Passos                |   ☑    |
+
+Esse conteúdo se conecta com o [Desafio 07](../Desafio07_sistemaRHAzure/README.md), que usa o Azure Table para guardar logs.
+
+---
+
 # ☁️ Introdução a Cloud com Azure:
 Este repositório contém o resumo das lições aprendidas e anotações importantes que fiz durante as aulas, especificadamente para o lab **Localizando Serviços por Categoria**, do curso de Introdução a Cloud com Azure da DIO (Digital Innovation One). Nele, compartilho os principais conceitos abordados e exemplos práticos pensando na minha principal área de desenvolvimento -> o Back-End. 
 
@@ -73,6 +111,3 @@ A computação em nuvem com Azure oferece um vasto leque de possibilidades para 
 * [Microsoft Learn – Trilha de Aprendizado do Azure (pt-BR)](https://learn.microsoft.com/pt-br/training/azure/);
 * [Certificações Microsoft Azure (pt-BR)](https://learn.microsoft.com/pt-br/certifications/);
 * [Azure Blog Oficial](https://azure.microsoft.com/pt-br/blog/).
-
-
-
