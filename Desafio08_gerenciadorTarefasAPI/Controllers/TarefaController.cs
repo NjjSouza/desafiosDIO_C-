@@ -18,40 +18,57 @@ namespace TrilhaApiDesafio.Controllers
         [HttpGet("{id}")]
         public IActionResult ObterPorId(int id)
         {
-            // TODO: Buscar o Id no banco utilizando o EF
-            // TODO: Validar o tipo de retorno. Se não encontrar a tarefa, retornar NotFound,
-            // caso contrário retornar OK com a tarefa encontrada
-            return Ok();
+            // IMPLEMENTADO: Find() busca pela chave primária (Id). Ele retorna null quando não
+            // existe nenhuma tarefa com aquele Id, e é isso que usamos para decidir o status HTTP.
+            var tarefa = _context.Tarefas.Find(id);
+
+            // 404 Not Found quando não encontra; caso contrário, 200 OK com a tarefa.
+            if (tarefa == null)
+                return NotFound();
+
+            return Ok(tarefa);
         }
 
         [HttpGet("ObterTodos")]
         public IActionResult ObterTodos()
         {
-            // TODO: Buscar todas as tarefas no banco utilizando o EF
-            return Ok();
+            // IMPLEMENTADO: ToList() executa a consulta no banco agora e devolve todas as tarefas.
+            // Uma lista vazia também é um resultado válido (200 OK com []), não é erro.
+            var tarefas = _context.Tarefas.ToList();
+            return Ok(tarefas);
         }
 
         [HttpGet("ObterPorTitulo")]
         public IActionResult ObterPorTitulo(string titulo)
         {
-            // TODO: Buscar  as tarefas no banco utilizando o EF, que contenha o titulo recebido por parâmetro
-            // Dica: Usar como exemplo o endpoint ObterPorData
-            return Ok();
+            // MELHORIA: sem esta validação, titulo == null faria Contains() lançar exceção (erro 500).
+            // 400 Bad Request avisa o cliente de que o parâmetro é obrigatório.
+            if (string.IsNullOrWhiteSpace(titulo))
+                return BadRequest(new { Erro = "O título não pode ser vazio" });
+
+            // IMPLEMENTADO: Contains() é traduzido pelo EF para um LIKE '%titulo%' no SQL Server,
+            // então traz todas as tarefas cujo título contém o texto (não só as idênticas).
+            // Se o Titulo guardado no banco for nulo, o EF trata isso no SQL sem quebrar.
+            var tarefas = _context.Tarefas.Where(x => x.Titulo.Contains(titulo)).ToList();
+            return Ok(tarefas);
         }
 
         [HttpGet("ObterPorData")]
         public IActionResult ObterPorData(DateTime data)
         {
-            var tarefa = _context.Tarefas.Where(x => x.Data.Date == data.Date);
+            // MELHORIA: adicionado ToList(). Antes o Where() devolvia a consulta ainda "não executada"
+            // e ela só rodava durante a serialização da resposta. Executar aqui, dentro do método,
+            // deixa o comportamento previsível e igual ao dos outros endpoints.
+            var tarefa = _context.Tarefas.Where(x => x.Data.Date == data.Date).ToList();
             return Ok(tarefa);
         }
 
         [HttpGet("ObterPorStatus")]
         public IActionResult ObterPorStatus(EnumStatusTarefa status)
         {
-            // TODO: Buscar  as tarefas no banco utilizando o EF, que contenha o status recebido por parâmetro
-            // Dica: Usar como exemplo o endpoint ObterPorData
-            var tarefa = _context.Tarefas.Where(x => x.Status == status);
+            // IMPLEMENTADO (seguindo o exemplo de ObterPorData): filtra pelo status recebido.
+            // O ToList() foi adicionado pelo mesmo motivo explicado em ObterPorData.
+            var tarefa = _context.Tarefas.Where(x => x.Status == status).ToList();
             return Ok(tarefa);
         }
 
@@ -61,7 +78,13 @@ namespace TrilhaApiDesafio.Controllers
             if (tarefa.Data == DateTime.MinValue)
                 return BadRequest(new { Erro = "A data da tarefa não pode ser vazia" });
 
-            // TODO: Adicionar a tarefa recebida no EF e salvar as mudanças (save changes)
+            // IMPLEMENTADO: Add() só marca a tarefa como "nova" na memória do EF.
+            // Nada vai para o banco até chamar SaveChanges().
+            _context.Tarefas.Add(tarefa);
+            _context.SaveChanges();
+
+            // Depois do SaveChanges, o banco gerou o Id e o EF já o preencheu em "tarefa".
+            // Por isso o CreatedAtAction (201 Created) consegue montar a URL correta da nova tarefa.
             return CreatedAtAction(nameof(ObterPorId), new { id = tarefa.Id }, tarefa);
         }
 
@@ -76,9 +99,20 @@ namespace TrilhaApiDesafio.Controllers
             if (tarefa.Data == DateTime.MinValue)
                 return BadRequest(new { Erro = "A data da tarefa não pode ser vazia" });
 
-            // TODO: Atualizar as informações da variável tarefaBanco com a tarefa recebida via parâmetro
-            // TODO: Atualizar a variável tarefaBanco no EF e salvar as mudanças (save changes)
-            return Ok();
+            // IMPLEMENTADO: copiamos os campos recebidos para a tarefa que veio do banco.
+            // O Id NÃO é copiado: ele identifica o registro e não deve mudar.
+            tarefaBanco.Titulo = tarefa.Titulo;
+            tarefaBanco.Descricao = tarefa.Descricao;
+            tarefaBanco.Data = tarefa.Data;
+            tarefaBanco.Status = tarefa.Status;
+
+            // Update() marca a tarefa como modificada; SaveChanges() grava no banco.
+            // (Como tarefaBanco já vem "rastreada" pelo Find, o Update é opcional, mas deixa a intenção explícita.)
+            _context.Tarefas.Update(tarefaBanco);
+            _context.SaveChanges();
+
+            // MELHORIA: antes retornava Ok() vazio. Devolver a tarefa atualizada é útil para o cliente.
+            return Ok(tarefaBanco);
         }
 
         [HttpDelete("{id}")]
@@ -89,7 +123,11 @@ namespace TrilhaApiDesafio.Controllers
             if (tarefaBanco == null)
                 return NotFound();
 
-            // TODO: Remover a tarefa encontrada através do EF e salvar as mudanças (save changes)
+            // IMPLEMENTADO: Remove() marca a tarefa para exclusão e SaveChanges() executa o DELETE.
+            _context.Tarefas.Remove(tarefaBanco);
+            _context.SaveChanges();
+
+            // 204 No Content: a exclusão deu certo e não há nada para devolver.
             return NoContent();
         }
     }
