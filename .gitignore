@@ -1,0 +1,26 @@
+# ---- .NET / C# ----
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userprefs
+.vs/
+TestResults/
+*.nupkg
+*.log
+
+# ---- Segredos e configuração local (nunca versionar credenciais) ----
+appsettings.Production.json
+appsettings.*.local.json
+*.local.json
+.env
+.env.*
+secrets.json
+
+# ---- Editores e sistema operacional ----
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
